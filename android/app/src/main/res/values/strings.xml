@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ncip-system</string>
+    <string name="title_activity_main">ncip-system</string>
+    <string name="package_name">com.ncip.app</string>
+    <string name="custom_url_scheme">com.ncip.app</string>
+</resources>
