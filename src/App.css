@@ -1,42 +1,3 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .font{
   font-family: "Roboto", sans-serif;
   font-optical-sizing: auto;
@@ -59,23 +20,67 @@
   letter-spacing: 1px;
 }
 
-.main-content{
-  margin-bottom: 100px;
-}
-
 .login-form {
   width: 100%;
 }
+
 .login-btn{
   height: 57px;
   background-color: #08439b !important;
   border-color: #08439b !important;
 }
 
-.login-btn:hover{
-  opacity: 0.75;
+.buttons{
+  background-color: #08439b !important;
+  border-color: #08439b !important;
 }
 
 .login-btn:active{
   opacity: 0.50;
+}
+
+.nav-bottom{
+  background-color: #e6d8d8;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+.btn-icons.activeClicked {
+  color: #08439b;
+}
+
+.home-container{
+  background-color:#00b1c5;
+  height: 11vh; 
+  border-radius: 35px 35px;
+  width: 95% !important;
+}
+
+.text-bold{
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+}
+
+.text-sub{
+  font-family: 'Roboto', sans-serif;
+  color: darkgray;
+}
+
+.size{
+  height: 100vh;
+}
+
+.logo{
+  height: 34vh;
+  width: 34vh;
+}
+
+.logo-start{
+  height: 50vh;
+  width: 50vh;
+}
+
+.register{
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  letter-spacing: 1px;
 }

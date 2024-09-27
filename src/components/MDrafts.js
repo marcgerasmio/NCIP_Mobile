@@ -1,257 +1,309 @@
 import Menu from "./Menu";
 import { useEffect, useState } from "react";
-import { Accordion, Button, Container, Image, Modal, Navbar } from "react-bootstrap";
-import supabase from "./config/supabaseClient"; 
+import {
+  Card,
+  Button,
+  Container,
+  Image,
+  Modal,
+  Navbar,
+  InputGroup,
+  FloatingLabel,
+  Form,
+} from "react-bootstrap";
+import supabase from "./config/supabaseClient";
+import { MdPreview } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import './Display.css';
+import "../App.css";
 
 function MDrafts() {
   const [drafts, setDrafts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedDraft, setSelectedDraft] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [draftToDelete, setDraftToDelete] = useState(null); 
-  const connection = sessionStorage.getItem('connection');
+  const [draftToDelete, setDraftToDelete] = useState(null);
+  const [selectedDrafts, setSelectedDrafts] = useState(new Set());
+  const connection = sessionStorage.getItem("connection");
   const navigate = useNavigate();
-
 
   const fetchDataFromIndexedDB = () => {
     if (!window.indexedDB) {
       alert("Your browser doesn't support IndexedDB.");
       return;
     }
-  
     const request = indexedDB.open("CensusDB", 1);
-  
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
-  
-      // Check if the object store already exists, otherwise create it
       if (!db.objectStoreNames.contains("formData")) {
-        db.createObjectStore("formData", { keyPath: "id", autoIncrement: true });
+        db.createObjectStore("formData", {
+          keyPath: "id",
+          autoIncrement: true,
+        });
       }
     };
-  
+
     request.onsuccess = (event) => {
       const db = event.target.result;
       const transaction = db.transaction(["formData"], "readonly");
       const objectStore = transaction.objectStore("formData");
       const getAllRequest = objectStore.getAll();
-  
       getAllRequest.onsuccess = () => {
         setDrafts(getAllRequest.result);
       };
     };
-  
+
     request.onerror = () => {
       alert("Failed to open IndexedDB.");
     };
   };
-  
 
-  // Open modal with selected draft details
   const handleAccordionClick = (draft) => {
     setSelectedDraft(draft);
     setShowModal(true);
   };
 
-  // Close modal
   const handleCloseModal = () => setShowModal(false);
 
-
   const syncData = async () => {
-   if (connection === 'false'){
-    alert('Check internet connection and login again.');
-    navigate("/");
-   }
-   else{
-
-    const request = indexedDB.open("CensusDB", 1);
-
-    request.onsuccess = async (event) => {
-      const db = event.target.result;
-      const transaction = db.transaction(["formData"], "readonly");
-      const objectStore = transaction.objectStore("formData");
-      const getAllRequest = objectStore.getAll();
-
-      getAllRequest.onsuccess = async () => {
-        const formData = getAllRequest.result;
-        const formDataWithoutId = formData.map(({ id, ...rest }) => rest);
-        if (formData.length > 0) {
-          try {
-            // Send data to Supabase
-            const { data, error } = await supabase
-              .from("census_data")
-              .insert(formDataWithoutId);
-
-            if (error) {
-              alert("Error syncing data with Supabase.");
-              console.error(error);
-              return;
+    if (connection === "false") {
+      alert("Check internet connection and login again.");
+      navigate("/");
+    } else {
+      const request = indexedDB.open("CensusDB", 1);
+      request.onsuccess = async (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction(["formData"], "readonly");
+        const objectStore = transaction.objectStore("formData");
+        const getAllRequest = objectStore.getAll();
+        getAllRequest.onsuccess = async () => {
+          const formData = getAllRequest.result;
+          const formDataWithoutId = formData.map(({ id, ...rest }) => rest);
+          if (formData.length > 0) {
+            try {
+              const { data, error } = await supabase
+                .from("census_data")
+                .insert(formDataWithoutId);
+              if (error) {
+                alert("Error syncing data with Supabase.");
+                console.error(error);
+                return;
+              }
+              const deleteTransaction = db.transaction(
+                ["formData"],
+                "readwrite",
+              );
+              const deleteObjectStore =
+                deleteTransaction.objectStore("formData");
+              deleteObjectStore.clear();
+              setDrafts([]);
+              alert("Data successfully synced with Supabase and IndexedDB cleared.");
+            } catch (error) {
+              console.error("Sync failed:", error);
+              alert("Failed to sync data.");
             }
-
-            // If data is synced successfully, clear IndexedDB
-            const deleteTransaction = db.transaction(["formData"], "readwrite");
-            const deleteObjectStore = deleteTransaction.objectStore("formData");
-            deleteObjectStore.clear();
-
-            // Clear the local state
-            setDrafts([]);
-            alert("Data successfully synced with Supabase and IndexedDB cleared.");
-          } catch (error) {
-            console.error("Sync failed:", error);
-            alert("Failed to sync data.");
+          } else {
+            alert("No data to sync.");
           }
-        } else {
-          alert("No data to sync.");
-        }
+        };
+        getAllRequest.onerror = () => {
+          alert("Failed to retrieve data from IndexedDB.");
+        };
       };
-
-      getAllRequest.onerror = () => {
-        alert("Failed to retrieve data from IndexedDB.");
+      request.onerror = () => {
+        alert("Failed to open IndexedDB.");
       };
-    };
-
-    request.onerror = () => {
-      alert("Failed to open IndexedDB.");
-    };
-  }
+    }
   };
 
-  // Function to show delete confirmation modal
   const handleDeleteClick = (draft) => {
     setDraftToDelete(draft);
     setShowDeleteModal(true);
   };
 
-  // Function to delete a draft from IndexedDB
   const deleteDraft = (draftId) => {
     const request = indexedDB.open("CensusDB", 1);
-
     request.onsuccess = (event) => {
       const db = event.target.result;
       const transaction = db.transaction(["formData"], "readwrite");
       const objectStore = transaction.objectStore("formData");
-
       objectStore.delete(draftId).onsuccess = () => {
-        setDrafts((prevDrafts) => prevDrafts.filter((draft) => draft.id !== draftId));
-        setShowDeleteModal(false); // Close delete confirmation modal
+        setDrafts((prevDrafts) =>
+          prevDrafts.filter((draft) => draft.id !== draftId),
+        );
+        setSelectedDrafts((prev) => {
+          const updated = new Set(prev);
+          updated.delete(draftId);
+          return updated;
+        });
+        setShowDeleteModal(false);
       };
     };
-
     request.onerror = () => {
       alert("Failed to delete draft.");
     };
   };
 
-  // Confirm delete
   const confirmDelete = () => {
-    if (draftToDelete) {
-      deleteDraft(draftToDelete.id);
+    const draftIdToDelete = draftToDelete ? draftToDelete.id : null;
+    if (draftIdToDelete) {
+      deleteDraft(draftIdToDelete);
+    } else {
+      selectedDrafts.forEach(id => deleteDraft(id));
+      setSelectedDrafts(new Set()); // Clear selection after deletion
     }
   };
 
-  // Fetch data when the component mounts
+  const toggleSelectAll = () => {
+    if (selectedDrafts.size === drafts.length) {
+      setSelectedDrafts(new Set()); // Deselect all
+    } else {
+      setSelectedDrafts(new Set(drafts.map(draft => draft.id))); // Select all
+    }
+  };
+
+  const handleSelectDraft = (id) => {
+    const newSelectedDrafts = new Set(selectedDrafts);
+    if (newSelectedDrafts.has(id)) {
+      newSelectedDrafts.delete(id); // Deselect
+    } else {
+      newSelectedDrafts.add(id); // Select
+    }
+    setSelectedDrafts(newSelectedDrafts);
+  };
+
   useEffect(() => {
     fetchDataFromIndexedDB();
   }, []);
+
   return (
     <>
-      <Navbar expand="lg" className="p-3 nav-bottom">
+      <Navbar expand="lg" fixed="top" className="p-3 nav-bottom shadow">
         <Container className="d-flex justify-content-center">
           <Image src="ncip.png" alt="" className="img-fluid" />
         </Container>
       </Navbar>
-      <div className="d-flex justify-content-between align-items-center mx-3 mt-3">
-        <h4>Drafts</h4>
-        <Button variant="info" className="fw-bold" onClick={syncData}>
-          Sync Data
-        </Button>
-      </div>
-
-      <Container className="mt-3">
-  {drafts.length > 0 ? (
-    <div className="drafts">
-      <Accordion>
-        {drafts.map((draft, index) => (
-          <Accordion.Item eventKey={index.toString()} key={index}>
-            <Accordion.Header>{draft.name || "Unnamed"}</Accordion.Header>
-            <Accordion.Body>
-              <div className="">
-                <Button variant="info" onClick={() => handleAccordionClick(draft)}>
-                  View Details
+      <Container className="mt-5 text">
+        {drafts.length > 0 ? (
+          <>
+            <div
+              style={{ height: "calc(100vh - 200px)", overflowY: "auto" }}
+              className="mt-5"
+            >
+              <div className="mt-5 mb-2">
+                <p className="text-muted fst-italic font">
+                  *Click the button to sync all the data
+                </p>
+                <label className="text-muted text">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedDrafts.size === drafts.length}
+                    onChange={toggleSelectAll}
+                    className="me-1"
+                  /> 
+                  Select All
+                </label>
+              </div>
+              <div>
+                {drafts.map((draft) => (
+                  <Card key={draft.id} className="p-0 mb-1">
+                    <Card.Body className="d-flex justify-content-between align-items-center p-2">
+                      <div className="d-flex align-items-center">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedDrafts.has(draft.id)}
+                          onChange={() => handleSelectDraft(draft.id)}
+                        />
+                        <Card.Title className="mt-1 ms-2">{draft.name || "Unnamed"}</Card.Title>
+                      </div>
+                      <div className="d-flex gap-2">
+                        <MdPreview 
+                          size={33} 
+                          onClick={() => handleAccordionClick(draft)}
+                          color="green"
+                        />
+                      </div>
+                    </Card.Body>
+                  </Card>
+                ))}
+              </div>
+            </div>
+            <Navbar fixed="bottom" className="mb-5">
+              <Container className="mb-4 gap-3">
+                <Button
+                  className="fw-bold font p-3 buttons w-100"
+                  onClick={syncData}
+                >
+                  Sync
                 </Button>
                 <Button
                   variant="danger"
-                  className="ms-2"
-                  onClick={() => handleDeleteClick(draft)}
+                  className="fw-bold font w-100 p-3"
+                  onClick={() => confirmDelete()}
+                  disabled={selectedDrafts.size === 0 && !draftToDelete}
                 >
                   Delete
                 </Button>
-              </div>
-            </Accordion.Body>
-          </Accordion.Item>
-        ))}
-      </Accordion>
-    </div>
-  ) : (
-    <p>No drafts available.</p>
-  )}
-</Container>
+              </Container>
+            </Navbar>
+          </>
+        ) : (
+          <Container
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: "70vh" }}
+          >
+            <p className="text-muted fst-italic fw-bold">
+              *No drafts available.
+            </p>
+          </Container>
+        )}
+      </Container>
 
-
-      {/* Modal for displaying detailed data */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
-          <Modal.Title>{selectedDraft?.name || "Details"}</Modal.Title>
+          <Modal.Title className="fw-bold">
+            {selectedDraft?.name || "Details"}
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body style={{ maxHeight: "60vh", overflowY: "auto" }}>
           {selectedDraft && (
             <div>
-              <p><strong>CADT:</strong> {selectedDraft.cadt}</p>
-              <p><strong>IP Group:</strong> {selectedDraft.ip_group}</p>
-              <p><strong>Recognized Leader:</strong> {selectedDraft.recognized_leader}</p>
-              <p><strong>Age:</strong> {selectedDraft.age}</p>
-              <p><strong>Gender:</strong> {selectedDraft.gender}</p>
-              <p><strong>Birth Date:</strong> {selectedDraft.birth_date}</p>
-              <p><strong>Birth Place:</strong> {selectedDraft.birth_place}</p>
-              <p><strong>Address:</strong> {selectedDraft.address}</p>
-              <p><strong>Available Documents:</strong> {selectedDraft.available_documents.join(", ")}</p>
-              <p><strong>Grade Level:</strong> {selectedDraft.grade_level}</p>
-              <p><strong>School:</strong> {selectedDraft.school}</p>
-              <p><strong>EAP Scholar:</strong> {selectedDraft.eap_scholar}</p>
-              <p><strong>House:</strong> {selectedDraft.house}</p>
-              <p><strong>Type of House:</strong> {selectedDraft.type_of_house}</p>
-              <p><strong>Type of Illness:</strong> {selectedDraft.type_of_illness}</p>
-              <p><strong>How Long:</strong> {selectedDraft.how_long}</p>
+              {Object.entries(selectedDraft).map(([key, value]) => (
+                <InputGroup className="mb-2" key={key}>
+                  <FloatingLabel
+                    controlId={key}
+                    label={key.replace("_", " ").toUpperCase()}
+                  >
+                    <Form.Control
+                      value={value}
+                      readOnly
+                      type="text"
+                      placeholder={key}
+                    />
+                  </FloatingLabel>
+                </InputGroup>
+              ))}
             </div>
           )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-        </Modal.Footer>
       </Modal>
 
-       {/* Delete confirmation modal */}
-       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Deletion</Modal.Title>
+          <Modal.Title className="fw-bold font">Confirm Deletion</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="fw-bold font">
           <p>Are you sure you want to delete this item?</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={confirmDelete}>
+          <Button
+            variant="danger"
+            onClick={confirmDelete}
+            className="fw-bold font w-100 p-3"
+          >
             Delete
           </Button>
         </Modal.Footer>
       </Modal>
-
       <Menu />
     </>
   );

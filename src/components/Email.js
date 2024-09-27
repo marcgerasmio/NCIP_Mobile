@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import emailjs from 'emailjs-com';
+import React, { useState } from "react";
+import emailjs from "emailjs-com";
 
 const EmailForm = () => {
   const [formData, setFormData] = useState({
-    from_name: '',
-    to_name: '',
-    message: '',
-    reply_to: ''
+    from_name: "",
+    to_name: "",
+    message: "",
+    reply_to: "",
   });
 
   const handleChange = (e) => {
@@ -23,23 +23,29 @@ const EmailForm = () => {
       from_name: formData.from_name,
       to_name: formData.to_name,
       message: formData.message,
-      reply_to: formData.reply_to
+      reply_to: formData.reply_to,
     };
 
-    emailjs.send('service_eri6sdi', 'template_zfwkubt', templateParams, 'WmGu5zx-HXjrvTMxJ')
+    emailjs
+      .send(
+        "service_eri6sdi",
+        "template_zfwkubt",
+        templateParams,
+        "WmGu5zx-HXjrvTMxJ",
+      )
       .then((response) => {
-        console.log('Email sent successfully!', response.status, response.text);
-        alert('Email sent successfully!');
+        console.log("Email sent successfully!", response.status, response.text);
+        alert("Email sent successfully!");
         setFormData({
-          from_name: '',
-          to_name: '',
-          message: '',
-          reply_to: ''
+          from_name: "",
+          to_name: "",
+          message: "",
+          reply_to: "",
         });
       })
       .catch((error) => {
-        console.error('Failed to send email:', error);
-        alert('Failed to send email. Please try again later.');
+        console.error("Failed to send email:", error);
+        alert("Failed to send email. Please try again later.");
       });
   };
 
