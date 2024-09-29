@@ -1,7 +1,7 @@
 import "../App.css";
 import Menu from "./Menu.js";
 import { MdPreview } from "react-icons/md";
-import { Navbar, Container, Image, Card, Form, Modal } from "react-bootstrap";
+import { Navbar, Container, Image, Card, Form, Modal, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 
 const MRecords = () => {
@@ -31,7 +31,7 @@ const MRecords = () => {
                             className="w-100 mb-2 p-3 shadow"
                         />
                         <p className="text-muted fst-italic text">
-                            *NOTE: Not a real-time records
+                            *NOTE: Not real-time records
                         </p>
                     </Container>
                     <Container>
@@ -55,7 +55,24 @@ const MRecords = () => {
                     <Modal.Title>Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Details</p>
+                    <Row>
+                        <Col xs={4} sm={3}>
+                            <p className="mb-0 font">Sample</p>
+                        </Col>
+                        <Col xs={8} sm={9}>
+                            <p className="text-muted mb-0">Sample</p>
+                        </Col>
+                    </Row>
+                    <hr />
+                    <Row>
+                        <Col xs={4} sm={3}>
+                            <p className="mb-0 font">Sample</p>
+                        </Col>
+                        <Col xs={8} sm={9}>
+                            <p className="text-muted mb-0">Sample</p>
+                        </Col>
+                    </Row>
+                    <hr />
                 </Modal.Body>
             </Modal>
         </>

@@ -1,4 +1,5 @@
 import Menu from "./Menu";
+import React from 'react';
 import { useEffect, useState } from "react";
 import {
   Card,
@@ -7,9 +8,8 @@ import {
   Image,
   Modal,
   Navbar,
-  InputGroup,
-  FloatingLabel,
-  Form,
+  Row, 
+  Col
 } from "react-bootstrap";
 import supabase from "./config/supabaseClient";
 import { MdPreview } from "react-icons/md";
@@ -260,7 +260,7 @@ function MDrafts() {
 
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
-          <Modal.Title className="fw-bold">
+          <Modal.Title>
             {selectedDraft?.name || "Details"}
           </Modal.Title>
         </Modal.Header>
@@ -268,19 +268,17 @@ function MDrafts() {
           {selectedDraft && (
             <div>
               {Object.entries(selectedDraft).map(([key, value]) => (
-                <InputGroup className="mb-2" key={key}>
-                  <FloatingLabel
-                    controlId={key}
-                    label={key.replace("_", " ").toUpperCase()}
-                  >
-                    <Form.Control
-                      value={value}
-                      readOnly
-                      type="text"
-                      placeholder={key}
-                    />
-                  </FloatingLabel>
-                </InputGroup>
+                <React.Fragment key={key}>
+                  <Row>
+                    <Col xs={4} sm={3}>
+                      <p className="mb-0 font">{key.replace("_", " ").toUpperCase()}</p>
+                    </Col>
+                    <Col xs={8} sm={9}>
+                      <p className="text-muted mb-0">{value || "null"}</p>
+                    </Col>
+                  </Row>
+                  <hr />
+                </React.Fragment>
               ))}
             </div>
           )}

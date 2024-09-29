@@ -137,8 +137,7 @@ function MProfile() {
         <Container className="mt-4">
           <Row>
             <Col xs={12} md={4} className="mb-4">
-              <Card className="shadow">
-                <Card.Body className="text-center">
+                <div className="text-center">
                   <Card.Img
                     variant="top"
                     src={userdata.image_link}
@@ -168,8 +167,7 @@ function MProfile() {
                       Logout
                     </Button>
                   </div>
-                </Card.Body>
-              </Card>
+                </div>
             </Col>
 
             <Col xs={12} md={8}>
