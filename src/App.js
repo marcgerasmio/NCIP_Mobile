@@ -1,7 +1,6 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import CheckConnection from "./components/ConnectionCheck";
-import EmailForm from "./components/Email";
 import MLogin from "./components/MLogin";
 import MForm from "./components/MForm";
 import MDrafts from "./components/MDrafts";
@@ -20,7 +19,6 @@ function App() {
         <Route path="/mdrafts" element={<MDrafts />}></Route>
         <Route path="/mprofile" element={<MProfile />}></Route>
         <Route path="/mrecords" element={<MRecords />}></Route>
-        <Route path="/email" element={<EmailForm />}></Route>
       </Routes>
     </>
   );

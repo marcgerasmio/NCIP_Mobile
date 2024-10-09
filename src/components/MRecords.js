@@ -5,7 +5,7 @@ import { Navbar, Container, Image, Card, Form, Modal, Row, Col, Button } from "r
 import { useState, useEffect } from "react";
 import supabase from "./config/supabaseClient.js";
 
-// IndexedDB functions inside the same file
+
 const openDB = () => {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('myDB', 1);
@@ -85,17 +85,17 @@ const deleteDataFromDB = () => {
 const MRecords = () => {
     const [showModal, setShowModal] = useState(false);
     const [userdata, setUserData] = useState([]);
-    const [selectedUser, setSelectedUser] = useState(null);  // New state for selected user
-    const [searchQuery, setSearchQuery] = useState("");  // State for search query
+    const [selectedUser, setSelectedUser] = useState(null); 
+    const [searchQuery, setSearchQuery] = useState("");  
 
     const handleIconClick = (user) => {
-        setSelectedUser(user);  // Set the clicked user
-        setShowModal(true);     // Show the modal
+        setSelectedUser(user);  
+        setShowModal(true);    
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
-        setSelectedUser(null);  // Reset selected user when closing modal
+        setSelectedUser(null);  
     };
 
     const fetch_data = async () => {

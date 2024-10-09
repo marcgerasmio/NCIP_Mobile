@@ -78,7 +78,7 @@ function MDrafts() {
         getAllRequest.onsuccess = async () => {
           const formData = getAllRequest.result;
   
-          // Filter only selected drafts for syncing
+     
           const selectedData = formData.filter(draft => selectedDrafts.has(draft.id));
   
           if (selectedData.length > 0) {
@@ -93,7 +93,7 @@ function MDrafts() {
                 return;
               }
   
-              // Delete synced drafts from IndexedDB
+             
               const deleteTransaction = db.transaction(["formData"], "readwrite");
               const deleteObjectStore = deleteTransaction.objectStore("formData");
               selectedData.forEach(draft => deleteObjectStore.delete(draft.id));
@@ -101,8 +101,8 @@ function MDrafts() {
               setDrafts(prevDrafts =>
                 prevDrafts.filter(draft => !selectedDrafts.has(draft.id))
               );
-              setSelectedDrafts(new Set()); // Clear selected drafts
-              alert("Data successfully synced with Supabase and IndexedDB cleared.");
+              setSelectedDrafts(new Set()); 
+              alert("Data successfully synced!");
             } catch (error) {
               console.error("Sync failed:", error);
               alert("Failed to sync data.");
@@ -156,24 +156,24 @@ function MDrafts() {
       deleteDraft(draftIdToDelete);
     } else {
       selectedDrafts.forEach(id => deleteDraft(id));
-      setSelectedDrafts(new Set()); // Clear selection after deletion
+      setSelectedDrafts(new Set()); 
     }
   };
 
   const toggleSelectAll = () => {
     if (selectedDrafts.size === drafts.length) {
-      setSelectedDrafts(new Set()); // Deselect all
+      setSelectedDrafts(new Set()); 
     } else {
-      setSelectedDrafts(new Set(drafts.map(draft => draft.id))); // Select all
+      setSelectedDrafts(new Set(drafts.map(draft => draft.id))); 
     }
   };
 
   const handleSelectDraft = (id) => {
     const newSelectedDrafts = new Set(selectedDrafts);
     if (newSelectedDrafts.has(id)) {
-      newSelectedDrafts.delete(id); // Deselect
+      newSelectedDrafts.delete(id); 
     } else {
-      newSelectedDrafts.add(id); // Select
+      newSelectedDrafts.add(id); 
     }
     setSelectedDrafts(newSelectedDrafts);
   };

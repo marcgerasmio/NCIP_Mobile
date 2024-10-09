@@ -117,7 +117,7 @@ const MForm = () => {
       const request = indexedDB.open("CensusDB", 1);
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
-        // Create an object store for form data if it doesn't exist
+  
         if (!db.objectStoreNames.contains("formData")) {
           db.createObjectStore("formData", {
             keyPath: "id",
@@ -127,14 +127,14 @@ const MForm = () => {
       };
       request.onsuccess = (event) => {
         const db = event.target.result;
-        // Ensure the formData object store exists before attempting a transaction
+ 
         if (!db.objectStoreNames.contains("formData")) {
           alert("Object store 'formData' does not exist.");
           return;
         }
         const transaction = db.transaction(["formData"], "readwrite");
         const objectStore = transaction.objectStore("formData");
-        // Data to store in IndexedDB
+   
         const formData = {
           cadt,
           ip_group: ipGroup,
@@ -154,7 +154,7 @@ const MForm = () => {
           type_of_illness: illness,
           how_long: illnessType,
         };
-        // Add form data to IndexedDB
+   
         const addRequest = objectStore.add(formData);
         addRequest.onsuccess = () => {
           alert("Data saved locally.");
@@ -182,7 +182,7 @@ const MForm = () => {
         style={{ height: "calc(100vh - 40px)", overflowY: "auto" }}
         className="mt-4"
       >
-        {/* <Form onSubmit={save}> */}
+        <Form onSubmit={save}>
           <Container className="p-4 text mt-5">
             <p className="text-muted fst-italic text">
               *NCIP Buenavista Census Form
@@ -496,7 +496,6 @@ const MForm = () => {
               variant="info"
               type="submit"
               disabled={loading}
-              onClick={save}
             >
               {loading ? (
                 <Spinner
@@ -511,7 +510,7 @@ const MForm = () => {
               )}
             </Button>
           </Container>
-        {/* </Form> */}
+        </Form>
       </div>
       <Menu />
     </>
