@@ -182,7 +182,7 @@ const MForm = () => {
         style={{ height: "calc(100vh - 40px)", overflowY: "auto" }}
         className="mt-4"
       >
-        <Form onSubmit={save}>
+        {/* <Form onSubmit={save}> */}
           <Container className="p-4 text mt-5">
             <p className="text-muted fst-italic text">
               *NCIP Buenavista Census Form
@@ -496,6 +496,7 @@ const MForm = () => {
               variant="info"
               type="submit"
               disabled={loading}
+              onClick={save}
             >
               {loading ? (
                 <Spinner
@@ -510,7 +511,7 @@ const MForm = () => {
               )}
             </Button>
           </Container>
-        </Form>
+        {/* </Form> */}
       </div>
       <Menu />
     </>

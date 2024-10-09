@@ -77,8 +77,12 @@ function MDrafts() {
         const getAllRequest = objectStore.getAll();
         getAllRequest.onsuccess = async () => {
           const formData = getAllRequest.result;
-          const formDataWithoutId = formData.map(({ id, ...rest }) => rest);
-          if (formData.length > 0) {
+  
+          // Filter only selected drafts for syncing
+          const selectedData = formData.filter(draft => selectedDrafts.has(draft.id));
+  
+          if (selectedData.length > 0) {
+            const formDataWithoutId = selectedData.map(({ id, ...rest }) => rest);
             try {
               const { data, error } = await supabase
                 .from("census_data")
@@ -88,21 +92,23 @@ function MDrafts() {
                 console.error(error);
                 return;
               }
-              const deleteTransaction = db.transaction(
-                ["formData"],
-                "readwrite",
+  
+              // Delete synced drafts from IndexedDB
+              const deleteTransaction = db.transaction(["formData"], "readwrite");
+              const deleteObjectStore = deleteTransaction.objectStore("formData");
+              selectedData.forEach(draft => deleteObjectStore.delete(draft.id));
+  
+              setDrafts(prevDrafts =>
+                prevDrafts.filter(draft => !selectedDrafts.has(draft.id))
               );
-              const deleteObjectStore =
-                deleteTransaction.objectStore("formData");
-              deleteObjectStore.clear();
-              setDrafts([]);
+              setSelectedDrafts(new Set()); // Clear selected drafts
               alert("Data successfully synced with Supabase and IndexedDB cleared.");
             } catch (error) {
               console.error("Sync failed:", error);
               alert("Failed to sync data.");
             }
           } else {
-            alert("No data to sync.");
+            alert("No selected data to sync.");
           }
         };
         getAllRequest.onerror = () => {
@@ -114,6 +120,7 @@ function MDrafts() {
       };
     }
   };
+  
 
   const handleDeleteClick = (draft) => {
     setDraftToDelete(draft);
@@ -186,7 +193,7 @@ function MDrafts() {
         {drafts.length > 0 ? (
           <>
             <div
-              style={{ height: "calc(100vh - 200px)", overflowY: "auto" }}
+              style={{ height: "70vh", overflowY: "auto" }}
               className="mt-5"
             >
               <div className="mt-5 mb-2">

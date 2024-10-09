@@ -19,6 +19,7 @@ import { TbLogout } from "react-icons/tb";
 
 function MProfile() {
   const navigate = useNavigate();
+  const connection = sessionStorage.getItem("connection");
   const id = sessionStorage.getItem("user_id");
   const [name, setName] = useState("");
   const [image_link, setImageLink] = useState("");
@@ -62,8 +63,18 @@ function MProfile() {
     }
   };
 
+  function redirect() {
+    if (connection === "true") {
+      fetch_user_details();
+    } else {
+      alert("you are offline")
+      navigate("/mform");
+    }
+  }
+
+
   useEffect(() => {
-    fetch_user_details();
+    redirect();
   }, []);
 
   const handleImageChange = (e) => {
@@ -134,6 +145,7 @@ function MProfile() {
   return (
     <>
       <Container fluid className="text main-content">
+      <div style={{ height: "90vh", overflowY: "auto" }}>
         <Container className="mt-4">
           <Row>
             <Col xs={12} md={4} className="mb-4">
@@ -156,7 +168,7 @@ function MProfile() {
                   </Card.Text>
                   <div className="d-flex gap-1 justify-content-center">
                     <Button
-                      className="w-25 p-2 me-1 buttons font fw-bold"
+                      className="p-2 me-1 buttons font fw-bold"
                       onClick={handleShow}
                     >
                       <FaRegEdit size={20} className="me-2 mb-1" />
@@ -243,7 +255,7 @@ function MProfile() {
             </Col>
           </Row>
         </Container>
-
+        </div>
         <Modal show={showModal} onHide={handleClose} className="text" centered>
           <Modal.Header closeButton>
             <Modal.Title className="font fw-bold">EDIT ACCOUNT</Modal.Title>

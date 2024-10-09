@@ -5,12 +5,13 @@
   font-weight: bolder;
   letter-spacing: 1px;
 }
-.shadow{
+.shdw{
   box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, 
   rgba(0, 0, 0, 0.12) 0px -12px 30px, 
   rgba(0, 0, 0, 0.12) 0px 4px 6px, 
   rgba(0, 0, 0, 0.17) 0px 12px 13px, 
-  rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  rgba(0, 0, 0, 0.09) 0px -3px 5px  !important;
+ 
 }
 
 .text{
@@ -22,6 +23,21 @@
 
 .login-form {
   width: 100%;
+}
+.sync-btn{
+  height: 45px;
+  background-color: #08439b !important;
+  border-color: #08439b !important;
+}
+.login-btn{
+  height: 57px;
+  background-color: #08439b !important;
+  border-color: #08439b !important;
+}
+.login-btn{
+  height: 57px;
+  background-color: #08439b !important;
+  border-color: #08439b !important;
 }
 
 .login-btn{
@@ -40,8 +56,8 @@
 }
 
 .nav-bottom{
-  background-color: #e6d8d8;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  background-color: #f0ecec;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 .btn-icons.activeClicked {
   color: #08439b;

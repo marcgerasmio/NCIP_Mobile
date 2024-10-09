@@ -24,7 +24,7 @@ function VerificationCheck() {
           <FaCircleXmark size={60} color="red" />
           <h2 className="fw-bold mt-2">Account not verified!</h2>
           <h6 className="fw-bold mt-1 text-muted">
-            *For verification, contact administration
+            *For verification, contact admin
           </h6>
           <Button onClick={logout} className="fw-bold w-100 login-btn mt-3">
             Exit

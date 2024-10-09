@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.ncip.app',
-  appName: 'ncip-system',
+  appName: 'NCIP-SYSTEM',
   webDir: 'build'
 };
 
